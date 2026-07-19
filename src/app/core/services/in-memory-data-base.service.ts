@@ -4,6 +4,7 @@ import {
   RequestInfo,
   STATUS,
 } from 'angular-in-memory-web-api';
+import { Observable } from 'rxjs';
 import { Deal } from '../../features/deals/models/deal';
 
 @Injectable({
@@ -38,7 +39,12 @@ export class InMemoryDataBaseService implements InMemoryDbService {
       },
     ];
 
-    return { deals };
+    const users = [
+      { id: 1, name: 'Alice', email: 'alice@gmail.com', password: 'admin' },
+      { id: 2, name: 'Bob', email: 'bob@gmail.com', password: 'user' },
+    ];
+
+    return { deals, users };
   }
 
   // Intercepta requisições GET
@@ -52,6 +58,51 @@ export class InMemoryDataBaseService implements InMemoryDbService {
 
     // Se for um GET normal (ex: api/deals ou api/deals/1), segue o fluxo padrão da biblioteca
     return undefined;
+  }
+
+  post(requestInfo: RequestInfo): Observable<any> | undefined {
+    const collectionName = requestInfo.collectionName;
+
+    // Se o Front-End tentar disparar para um endpoint customizado de autenticação
+    if (collectionName === 'users') {
+      return this.handleAuthentication(requestInfo);
+    }
+
+    return undefined; // Deixa o comportamento padrão agir para as outras tabelas
+  }
+
+  private handleAuthentication(requestInfo: RequestInfo) {
+    // Descobre qual a ação (Ex: se a URL for 'api/auth/login', o id será 'login')
+    const usersCollection = (requestInfo.utils.getDb() as any).users; // Busca a lista de usuários do createDb()
+
+    // Pega os dados enviados no corpo do formulário de login (email e password)
+    const credentials = requestInfo.utils.getJsonBody(requestInfo.req);
+
+    // Procura o usuário no "banco" com a combinação correta de email e senha
+    const foundUser = usersCollection.find(
+      (u: any) =>
+        u.email === credentials.email && u.password === credentials.password,
+    );
+
+    if (foundUser) {
+      // Remove a senha do objeto de resposta por segurança
+      const { password, ...userWithoutPassword } = foundUser;
+
+      // Retorna sucesso (200 OK) enviando os dados do usuário e um Token simulado
+      return requestInfo.utils.createResponse$(() => ({
+        status: STATUS.OK,
+        body: {
+          user: userWithoutPassword,
+          token: 'fake-jwt-token-generico-para-o-front-end',
+        },
+      }));
+    } else {
+      // Se não encontrar, retorna erro de credenciais inválidas (401 Unauthorized)
+      return requestInfo.utils.createResponse$(() => ({
+        status: STATUS.UNAUTHORIZED,
+        body: { message: 'E-mail ou senha incorretos.' },
+      }));
+    }
   }
 
   private handleFilterDeals(requestInfo: RequestInfo) {
