@@ -1,3 +1,11 @@
+<div class="page-header">
+  <h2>Deals</h2>
+  <button mat-flat-button color="primary" (click)="onAddDeal()">
+    <mat-icon>add</mat-icon>
+    Add Deal
+  </button>
+</div>
+
 <app-deals-filter [filter]="dealsFilterForm" />
 
 <app-deals-table [deals]="(deals$ | async) ?? []" />

@@ -15,4 +15,8 @@ export class DealsService {
     const params = toHttpParams(filter);
     return this.http.get<Deal[]>('api/deals', { params });
   }
+
+  createDeal(deal: Deal): Observable<Deal> {
+    return this.http.post<Deal>('api/deals', deal);
+  }
 }

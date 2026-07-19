@@ -1,18 +1,18 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { CreateDealComponent } from './create-deal.component';
+import { DealFormComponent } from './deal-form.component';
 
-describe('CreateDealComponent', () => {
-  let component: CreateDealComponent;
-  let fixture: ComponentFixture<CreateDealComponent>;
+describe('DealFormComponent', () => {
+  let component: DealFormComponent;
+  let fixture: ComponentFixture<DealFormComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [CreateDealComponent]
+      imports: [DealFormComponent]
     })
     .compileComponents();
     
-    fixture = TestBed.createComponent(CreateDealComponent);
+    fixture = TestBed.createComponent(DealFormComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });
