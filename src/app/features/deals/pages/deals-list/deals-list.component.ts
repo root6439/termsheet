@@ -1,13 +1,9 @@
 import { AsyncPipe } from '@angular/common';
 import { Component, inject } from '@angular/core';
-import { FormControl } from '@angular/forms';
-import {
-  debounceTime,
-  distinctUntilChanged,
-  startWith,
-  switchMap,
-  tap,
-} from 'rxjs';
+import { FormControl, FormGroup } from '@angular/forms';
+import { debounceTime, distinctUntilChanged, startWith, switchMap } from 'rxjs';
+import { DealFilter } from '../../models/deal-filter';
+import { DealFilterForm } from '../../models/deal-filter-form';
 import { DealsService } from '../../services/deals.service';
 import { DealsFilterComponent } from './components/deals-filter/deals-filter.component';
 import { DealsTableComponent } from './components/deals-table/deals-table.component';
@@ -22,13 +18,16 @@ import { DealsTableComponent } from './components/deals-table/deals-table.compon
 export class DealsListComponent {
   readonly dealsService = inject(DealsService);
 
-  readonly dealsSearchControl = new FormControl('', { nonNullable: true });
+  readonly dealsFilterForm = new FormGroup<DealFilterForm>({
+    name: new FormControl(),
+    purchasePriceFrom: new FormControl(),
+    purchasePriceTo: new FormControl(),
+  });
 
-  readonly deals$ = this.dealsSearchControl.valueChanges.pipe(
+  readonly deals$ = this.dealsFilterForm.valueChanges.pipe(
     debounceTime(300),
     distinctUntilChanged(),
     startWith(''),
-    switchMap((search) => this.dealsService.getDeals(search)),
-    tap((deals) => console.log('Fetched deals:', deals)),
+    switchMap((filter) => this.dealsService.getDeals(filter as DealFilter)),
   );
 }
