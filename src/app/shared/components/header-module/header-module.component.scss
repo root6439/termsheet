@@ -1,0 +1,16 @@
+.page-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem;
+
+  h2 {
+    margin-bottom: 0;
+  }
+
+  .actions {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+  }
+}

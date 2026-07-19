@@ -1,13 +1,4 @@
-<div class="page-header">
-  <h2>Deals</h2>
-
-  @if (isAdmin()) {
-    <button mat-flat-button color="primary" (click)="onAddDeal()">
-      <mat-icon>add</mat-icon>
-      Add Deal
-    </button>
-  }
-</div>
+<app-header-module moduleName="Deal" (add)="openModalDealForm()" />
 
 <app-deals-filter [filter]="dealsFilterForm" />
 
