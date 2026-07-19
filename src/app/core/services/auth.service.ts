@@ -1,30 +1,29 @@
-import { Injectable } from '@angular/core';
+import { computed, effect, Injectable, signal } from '@angular/core';
 import { User } from '../models/user';
 
 @Injectable({
   providedIn: 'root',
 })
 export class AuthService {
-  private _user: User | null = null;
+  private readonly _user = signal<User | null>(null);
+  readonly isAdmin = computed(() => this._user()?.role === 'admin');
+  readonly user = this._user.asReadonly();
 
-  get isAuthenticated(): boolean {
-    return this.currentUser !== null;
-  }
+  constructor() {
+    const user = localStorage.getItem('user');
 
-  get currentUser(): User | null {
-    if (!this._user) {
-      const user = localStorage.getItem('user');
-
-      if (user) {
-        this.setUser(JSON.parse(user));
-      }
+    if (user) {
+      this.setUser(JSON.parse(user));
     }
 
-    return this._user;
+    effect(() => localStorage.setItem('user', JSON.stringify(this._user())));
   }
 
-  setUser(user: User): void {
-    this._user = user;
-    localStorage.setItem('user', JSON.stringify(user));
+  setUser(user: User | null): void {
+    this._user.set(user);
+  }
+
+  get isAuthenticated(): boolean {
+    return this.user() !== null;
   }
 }

@@ -1,5 +1,14 @@
 <mat-toolbar color="primary">
   <h1>TermSheet App</h1>
+
+  @if (user()) {
+    <span>
+      Hello, {{ user()?.name }}
+      <button mat-icon-button (click)="logout()">
+        <mat-icon>logout</mat-icon>
+      </button>
+    </span>
+  }
 </mat-toolbar>
 
 <router-outlet></router-outlet>

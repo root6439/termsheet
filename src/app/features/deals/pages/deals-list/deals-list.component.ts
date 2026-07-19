@@ -11,6 +11,7 @@ import {
   startWith,
   switchMap,
 } from 'rxjs';
+import { AuthService } from '../../../../core/services/auth.service';
 import { DealFilter } from '../../models/deal-filter';
 import { DealFilterForm } from '../../models/deal-filter-form';
 import { DealsService } from '../../services/deals.service';
@@ -34,6 +35,7 @@ import { DealsTableComponent } from './components/deals-table/deals-table.compon
 export class DealsListComponent {
   readonly dealsService = inject(DealsService);
   readonly matDialog = inject(MatDialog);
+  readonly authService = inject(AuthService);
 
   readonly dealsFilterForm = new FormGroup<DealFilterForm>({
     name: new FormControl(),
@@ -47,6 +49,8 @@ export class DealsListComponent {
     startWith(''),
     switchMap((filter) => this.dealsService.getDeals(filter as DealFilter)),
   );
+
+  readonly isAdmin = this.authService.isAdmin;
 
   onAddDeal() {
     const dialogRef = this.matDialog.open(DealFormComponent, {

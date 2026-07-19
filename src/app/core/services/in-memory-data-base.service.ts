@@ -6,12 +6,14 @@ import {
 } from 'angular-in-memory-web-api';
 import { Observable } from 'rxjs';
 import { Deal } from '../../features/deals/models/deal';
+import { Role } from '../models/roles';
 
 interface User {
   id: number;
   name: string;
   email: string;
   password: string;
+  role: Role;
 }
 
 @Injectable({
@@ -47,8 +49,20 @@ export class InMemoryDataBaseService implements InMemoryDbService {
     ];
 
     const users: User[] = [
-      { id: 1, name: 'Alice', email: 'alice@gmail.com', password: 'admin' },
-      { id: 2, name: 'Bob', email: 'bob@gmail.com', password: 'user' },
+      {
+        id: 1,
+        name: 'Alice',
+        email: 'alice@gmail.com',
+        password: 'admin',
+        role: 'admin',
+      },
+      {
+        id: 2,
+        name: 'Bob',
+        email: 'bob@gmail.com',
+        password: 'user',
+        role: 'user',
+      },
     ];
 
     return { deals, users };
@@ -101,10 +115,7 @@ export class InMemoryDataBaseService implements InMemoryDbService {
       // Retorna sucesso (200 OK) enviando os dados do usuário e um Token simulado
       return requestInfo.utils.createResponse$(() => ({
         status: STATUS.OK,
-        body: {
-          user: userWithoutPassword,
-          token: 'fake-jwt-token-generico-para-o-front-end',
-        },
+        body: userWithoutPassword,
       }));
     } else {
       // Se não encontrar, retorna erro de credenciais inválidas (401 Unauthorized)

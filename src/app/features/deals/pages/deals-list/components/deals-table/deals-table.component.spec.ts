@@ -20,4 +20,10 @@ describe('DealsTableComponent', () => {
   it('should create', () => {
     expect(component).toBeTruthy();
   });
+
+  it('should highlight matching search terms in text', () => {
+    expect(component.buildHighlightedHtml('Apex Tower', 'tower')).toBe(
+      'Apex <mark>Tower</mark>',
+    );
+  });
 });
