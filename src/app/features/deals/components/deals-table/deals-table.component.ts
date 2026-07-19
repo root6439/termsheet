@@ -1,17 +1,22 @@
 import { CurrencyPipe } from '@angular/common';
-import { Component, input } from '@angular/core';
+import { Component, input, output } from '@angular/core';
+import { MatIconButton } from '@angular/material/button';
+import { MatIcon } from '@angular/material/icon';
 import { MatTableModule } from '@angular/material/table';
-import { Deal } from '../../../../models/deal';
+import { Deal } from '../../models/deal';
 
 @Component({
   selector: 'app-deals-table',
   standalone: true,
-  imports: [MatTableModule, CurrencyPipe],
+  imports: [MatTableModule, CurrencyPipe, MatIconButton, MatIcon],
   templateUrl: './deals-table.component.html',
   styleUrl: './deals-table.component.scss',
 })
 export class DealsTableComponent {
   readonly deals = input.required<Deal[]>();
+
+  readonly edit = output<Deal>();
+  readonly delete = output<number>();
 
   readonly displayedColumns: string[] = [
     'name',
@@ -19,5 +24,6 @@ export class DealsTableComponent {
     'address',
     'noi',
     'capRate',
+    'actions',
   ];
 }

@@ -1,5 +1,0 @@
-<app-header-module moduleName="Deal" (add)="openModalDealForm()" />
-
-<app-deals-filter [filter]="dealsFilterForm" />
-
-<app-deals-table [deals]="(deals$ | async) ?? []" />

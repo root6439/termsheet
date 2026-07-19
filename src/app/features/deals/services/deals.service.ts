@@ -19,4 +19,12 @@ export class DealsService {
   createDeal(deal: Deal): Observable<Deal> {
     return this.http.post<Deal>('api/deals', deal);
   }
+
+  updateDeal(deal: Deal): Observable<Deal> {
+    return this.http.put<Deal>(`api/deals`, deal);
+  }
+
+  deleteDeal(dealId: number): Observable<void> {
+    return this.http.delete<void>(`api/deals/${dealId}`);
+  }
 }

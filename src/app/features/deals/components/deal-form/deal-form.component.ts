@@ -16,8 +16,8 @@ import {
 } from '@angular/material/dialog';
 import { MatFormField, MatHint, MatLabel } from '@angular/material/form-field';
 import { MatInput } from '@angular/material/input';
-import { Deal } from '../../../../models/deal';
-import { DealsService } from '../../../../services/deals.service';
+import { Deal } from '../../models/deal';
+import { DealsService } from '../../services/deals.service';
 
 @Component({
   selector: 'app-deal-form',

@@ -9,16 +9,19 @@ import {
   startWith,
   switchMap,
 } from 'rxjs';
-import { HeaderModuleComponent } from '../../../../shared/components/header-module/header-module.component';
-import { DealFilter } from '../../models/deal-filter';
-import { DealFilterForm } from '../../models/deal-filter-form';
-import { DealsService } from '../../services/deals.service';
+import { HeaderModuleComponent } from '../../shared/components/header-module/header-module.component';
+import { DealFilter } from './models/deal-filter';
+import { DealFilterForm } from './models/deal-filter-form';
+
+import { DialogService } from '../../shared/services/dialog.service';
 import { DealFormComponent } from './components/deal-form/deal-form.component';
 import { DealsFilterComponent } from './components/deals-filter/deals-filter.component';
 import { DealsTableComponent } from './components/deals-table/deals-table.component';
+import { Deal } from './models/deal';
+import { DealsService } from './services/deals.service';
 
 @Component({
-  selector: 'app-deals-list',
+  selector: 'app-deal-management',
   standalone: true,
   imports: [
     DealsTableComponent,
@@ -26,12 +29,13 @@ import { DealsTableComponent } from './components/deals-table/deals-table.compon
     AsyncPipe,
     HeaderModuleComponent,
   ],
-  templateUrl: './deals-list.component.html',
-  styleUrl: './deals-list.component.scss',
+  templateUrl: './deal-management.component.html',
+  styleUrl: './deal-management.component.scss',
 })
-export class DealsListComponent {
+export class DealManagementComponent {
   readonly dealsService = inject(DealsService);
   readonly matDialog = inject(MatDialog);
+  readonly dialogService = inject(DialogService);
 
   readonly dealsFilterForm = new FormGroup<DealFilterForm>({
     name: new FormControl(),
@@ -46,20 +50,36 @@ export class DealsListComponent {
     switchMap((filter) => this.dealsService.getDeals(filter as DealFilter)),
   );
 
-  openModalDealForm() {
+  private reload() {
+    this.dealsFilterForm.setValue(this.dealsFilterForm.getRawValue());
+  }
+
+  openModalDealForm(deal?: Deal) {
     const dialogRef = this.matDialog.open(DealFormComponent, {
       width: '400px',
-      data: null,
+      data: deal,
     });
 
     dialogRef
       .afterClosed()
       .pipe(
         filter((result) => !!result),
-        switchMap((result) => this.dealsService.createDeal(result)),
+        switchMap((result) =>
+          deal
+            ? this.dealsService.updateDeal(result)
+            : this.dealsService.createDeal(result),
+        ),
       )
-      .subscribe(() => {
-        this.dealsFilterForm.setValue(this.dealsFilterForm.getRawValue());
-      });
+      .subscribe(() => this.reload());
+  }
+
+  deleteDeal(dealId: number) {
+    this.dialogService
+      .confirmDeletion(
+        'Delete Deal',
+        'Are you sure you want to delete this deal? This proccess cannot be undone.',
+      )
+      .pipe(switchMap(() => this.dealsService.deleteDeal(dealId)))
+      .subscribe(() => this.reload());
   }
 }

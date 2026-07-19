@@ -5,8 +5,8 @@ export const routes: Routes = [
   {
     path: 'deals',
     loadComponent: () =>
-      import('./features/deals/pages/deals-list/deals-list.component').then(
-        (c) => c.DealsListComponent,
+      import('./features/deals/deal-management.component').then(
+        (c) => c.DealManagementComponent,
       ),
     canActivate: [authGuard],
   },
