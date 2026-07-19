@@ -7,6 +7,13 @@ import {
 import { Observable } from 'rxjs';
 import { Deal } from '../../features/deals/models/deal';
 
+interface User {
+  id: number;
+  name: string;
+  email: string;
+  password: string;
+}
+
 @Injectable({
   providedIn: 'root',
 })
@@ -39,7 +46,7 @@ export class InMemoryDataBaseService implements InMemoryDbService {
       },
     ];
 
-    const users = [
+    const users: User[] = [
       { id: 1, name: 'Alice', email: 'alice@gmail.com', password: 'admin' },
       { id: 2, name: 'Bob', email: 'bob@gmail.com', password: 'user' },
     ];
@@ -73,14 +80,17 @@ export class InMemoryDataBaseService implements InMemoryDbService {
 
   private handleAuthentication(requestInfo: RequestInfo) {
     // Descobre qual a ação (Ex: se a URL for 'api/auth/login', o id será 'login')
-    const usersCollection = (requestInfo.utils.getDb() as any).users; // Busca a lista de usuários do createDb()
+    const usersCollection = (requestInfo.utils.getDb() as any).users as User[]; // Busca a lista de usuários do createDb()
 
     // Pega os dados enviados no corpo do formulário de login (email e password)
-    const credentials = requestInfo.utils.getJsonBody(requestInfo.req);
+    const credentials = requestInfo.utils.getJsonBody(requestInfo.req) as {
+      email: string;
+      password: string;
+    };
 
     // Procura o usuário no "banco" com a combinação correta de email e senha
     const foundUser = usersCollection.find(
-      (u: any) =>
+      (u: User) =>
         u.email === credentials.email && u.password === credentials.password,
     );
 

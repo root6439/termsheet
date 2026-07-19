@@ -10,6 +10,8 @@ import { MatCardModule } from '@angular/material/card';
 import { MatFormField, MatLabel } from '@angular/material/form-field';
 import { MatInput } from '@angular/material/input';
 import { Router } from '@angular/router';
+import { User } from '../../core/models/user';
+import { AuthService } from '../../core/services/auth.service';
 import { SnackbarService } from '../../shared/services/snackbar.service';
 import { LoginService } from './services/login.service';
 
@@ -30,6 +32,7 @@ import { LoginService } from './services/login.service';
 export class LoginComponent {
   readonly loginService = inject(LoginService);
   readonly snackbarService = inject(SnackbarService);
+  readonly authService = inject(AuthService);
   readonly router = inject(Router);
 
   readonly loginForm = new FormGroup({
@@ -41,7 +44,8 @@ export class LoginComponent {
     const { email, password } = this.loginForm.getRawValue();
 
     this.loginService.login(email!, password!).subscribe({
-      next: () => {
+      next: (user: User) => {
+        this.authService.setUser(user);
         this.router.navigateByUrl('/deals');
       },
       error: () => {
