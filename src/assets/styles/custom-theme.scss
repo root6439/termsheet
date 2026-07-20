@@ -1,0 +1,91 @@
+@use "@angular/material" as mat;
+
+// 1. Inclui os estilos estruturais básicos obrigatórios
+@include mat.core();
+
+// 2. Paleta Primária: Baseada no seu Laranja vibrante (#ff8000)
+$custom-primary-palette: mat.define-palette(
+  (
+    50: #fff0e0,
+    100: #ffd9b3,
+    200: #ffbf80,
+    300: #ffa64d,
+    400: #ff8c1a,
+    500: #ff8000,
+    // Tom principal
+    600: #e67300,
+    700: #cc6600,
+    800: #b35900,
+    900: #994d00,
+    A100: #ffffff,
+    A200: #ffe0cc,
+    A300: #ffb380,
+    A400: #ff8000,
+    contrast: (
+      50: rgba(0, 0, 0, 0.87),
+      100: rgba(0, 0, 0, 0.87),
+      200: rgba(0, 0, 0, 0.87),
+      300: rgba(0, 0, 0, 0.87),
+      400: white,
+      500: white,
+      // Texto branco sobre o botão laranja
+      600: white,
+      700: white,
+      800: white,
+      900: white,
+    ),
+  )
+);
+
+// 3. Paleta Secundária (Accent): Baseada no seu Grafite Escuro (#202020)
+$custom-accent-palette: mat.define-palette(
+  (
+    50: #e5e5e5,
+    100: #bebebe,
+    200: #939393,
+    300: #686868,
+    400: #494949,
+    500: #202020,
+    // Sua cor secundária original
+    600: #1c1c1c,
+    700: #181818,
+    800: #131313,
+    900: #0a0a0a,
+    A100: #505050,
+    A200: #202020,
+    A300: #151515,
+    A400: #000000,
+    contrast: (
+      50: rgba(0, 0, 0, 0.87),
+      100: rgba(0, 0, 0, 0.87),
+      200: rgba(0, 0, 0, 0.87),
+      300: white,
+      400: white,
+      500: white,
+      // Garante texto branco legível sobre o grafite escuro
+      600: white,
+      700: white,
+      800: white,
+      900: white,
+    ),
+  )
+);
+
+// 4. Criação do Tema Escuro unindo as duas paletas customizadas
+$custom-dark-theme: mat.define-dark-theme(
+  (
+    color: (
+      primary: $custom-primary-palette,
+      accent: $custom-accent-palette,
+    ),
+    typography: mat.define-typography-config(
+        $font-family: "Roboto, sans-serif",
+      ),
+    density: 0,
+  )
+);
+
+// 5. Injeta o tema escuro como padrão na aplicação
+html {
+  @include mat.all-component-themes($custom-dark-theme);
+}

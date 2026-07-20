@@ -1,0 +1,16 @@
+<div class="search-form">
+  <mat-form-field>
+    <mat-label>Search</mat-label>
+    <input matInput [formControl]="filter().controls.name" />
+  </mat-form-field>
+
+  <mat-form-field>
+    <mat-label>Price from</mat-label>
+    <input matInput [formControl]="filter().controls.purchasePriceFrom" />
+  </mat-form-field>
+
+  <mat-form-field>
+    <mat-label>Price To</mat-label>
+    <input matInput [formControl]="filter().controls.purchasePriceTo" />
+  </mat-form-field>
+</div>

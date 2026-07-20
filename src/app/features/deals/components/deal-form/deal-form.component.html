@@ -1,0 +1,52 @@
+<h2 mat-dialog-title>{{ flow | titlecase }} Deal</h2>
+
+<mat-dialog-content>
+  <form [formGroup]="dealForm" (ngSubmit)="submit()">
+    <mat-form-field>
+      <mat-label>Deal Name</mat-label>
+      <input matInput formControlName="name" />
+    </mat-form-field>
+
+    <mat-form-field>
+      <mat-label>Purchase Price</mat-label>
+      <input matInput formControlName="purchasePrice" type="number" />
+    </mat-form-field>
+
+    <mat-form-field>
+      <mat-label>Address</mat-label>
+      <input matInput formControlName="address" />
+    </mat-form-field>
+
+    <mat-form-field>
+      <mat-label>NOI</mat-label>
+      <input matInput formControlName="noi" type="number" />
+    </mat-form-field>
+
+    <mat-form-field>
+      <mat-label>Cap Rate</mat-label>
+      <input matInput formControlName="capRate" readonly />
+
+      @if (unrealisticCapRate) {
+        <mat-hint>
+          Cap rate is outside the typical range of 5% to 12%.
+        </mat-hint>
+      }
+    </mat-form-field>
+
+    <div class="actions">
+      <button mat-button (click)="dialogRef.close()" type="button">
+        Cancel
+      </button>
+
+      <button
+        mat-flat-button
+        color="primary"
+        type="submit"
+        (click)="submit()"
+        [disabled]="dealForm.invalid"
+      >
+        {{ flow | titlecase }}
+      </button>
+    </div>
+  </form>
+</mat-dialog-content>

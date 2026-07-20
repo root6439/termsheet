@@ -1,0 +1,14 @@
+<div class="page-header">
+  <h2>{{ moduleName() }} Management</h2>
+
+  <div class="actions">
+    <ng-content></ng-content>
+
+    @if (isAdmin()) {
+      <button mat-flat-button color="primary" (click)="add.emit()">
+        <mat-icon>add</mat-icon>
+        New {{ moduleName() }}
+      </button>
+    }
+  </div>
+</div>
