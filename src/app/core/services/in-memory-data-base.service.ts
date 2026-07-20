@@ -89,7 +89,52 @@ export class InMemoryDataBaseService implements InMemoryDbService {
       return this.handleAuthentication(requestInfo);
     }
 
+    // NOVA VALIDAÇÃO: Bloqueia a criação se o nome do Deal já existir
+    if (collectionName === 'deals') {
+      return this.handleDealRegistration(requestInfo);
+    }
+
     return undefined; // Deixa o comportamento padrão agir para as outras tabelas
+  }
+
+  // Intercepta requisições PUT (Atualizações)
+  put(requestInfo: RequestInfo): Observable<any> | undefined {
+    const collectionName = requestInfo.collectionName;
+
+    // Valida duplicidade de nome ao atualizar um Deal
+    if (collectionName === 'deals') {
+      return this.handleDealUpdate(requestInfo);
+    }
+
+    return undefined; // Deixa o comportamento padrão agir para outras tabelas
+  }
+
+  // Método exclusivo para validar duplicidade de nomes na ATUALIZAÇÃO de deals
+  private handleDealUpdate(requestInfo: RequestInfo) {
+    const db = requestInfo.utils.getDb() as any;
+    const dealsCollection = db.deals as Deal[];
+    const updatedDeal = requestInfo.utils.getJsonBody(requestInfo.req) as Deal;
+
+    // Busca se existe OUTRO deal com o mesmo nome, desconsiderando o ID do deal atual
+    const nameExists = dealsCollection.some(
+      (deal: Deal) =>
+        deal.id !== updatedDeal.id &&
+        deal.name.trim().toLowerCase() ===
+          updatedDeal.name.trim().toLowerCase(),
+    );
+
+    if (nameExists) {
+      // Retorna erro HTTP 409 Conflict se o nome já estiver em uso por outro registro
+      return requestInfo.utils.createResponse$(() => ({
+        status: STATUS.CONFLICT,
+        error: {
+          message: `Deal with name '${updatedDeal.name}' already exists`,
+        },
+      }));
+    }
+
+    // Se o nome for válido ou não conflitar, retorna undefined para o In-Memory atualizar os dados salvos
+    return undefined;
   }
 
   private handleAuthentication(requestInfo: RequestInfo) {
@@ -121,7 +166,7 @@ export class InMemoryDataBaseService implements InMemoryDbService {
       // Se não encontrar, retorna erro de credenciais inválidas (401 Unauthorized)
       return requestInfo.utils.createResponse$(() => ({
         status: STATUS.UNAUTHORIZED,
-        body: { message: 'E-mail ou senha incorretos.' },
+        error: { message: 'Incorrect e-mail or password.' },
       }));
     }
   }
@@ -162,6 +207,32 @@ export class InMemoryDataBaseService implements InMemoryDbService {
       body: filteredResults,
       status: STATUS.OK,
     }));
+  }
+
+  // Método exclusivo para validar duplicidade de nomes em deals
+  private handleDealRegistration(requestInfo: RequestInfo) {
+    const db = requestInfo.utils.getDb() as any;
+    const dealsCollection = db.deals as Deal[]; // Acessa os dados atuais na memória
+    const newDeal = requestInfo.utils.getJsonBody(requestInfo.req) as Deal;
+
+    // Verifica se já existe algum negócio com o mesmo nome (ignorando maiúsculas/minúsculas)
+    const nameExists = dealsCollection.some(
+      (deal: Deal) =>
+        deal.name.trim().toLowerCase() === newDeal.name.trim().toLowerCase(),
+    );
+
+    if (nameExists) {
+      // Retorna erro HTTP 409 Conflict se o nome for repetido
+      return requestInfo.utils.createResponse$(() => ({
+        status: STATUS.CONFLICT,
+        error: {
+          message: `Deal with name '${newDeal.name}' already exists`,
+        },
+      }));
+    }
+
+    // Se o nome for único, retorna undefined para o In-Memory gerar o ID e salvar automaticamente
+    return undefined;
   }
 
   genId(deals: Deal[]): number {

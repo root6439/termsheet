@@ -3,8 +3,10 @@ import { Component, inject } from '@angular/core';
 import { FormControl, FormGroup } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
 import {
+  catchError,
   debounceTime,
   distinctUntilChanged,
+  EMPTY,
   filter,
   startWith,
   switchMap,
@@ -13,7 +15,9 @@ import { HeaderModuleComponent } from '../../shared/components/header-module/hea
 import { DealFilter } from './models/deal-filter';
 import { DealFilterForm } from './models/deal-filter-form';
 
+import { HttpErrorResponse } from '@angular/common/http';
 import { DialogService } from '../../shared/services/dialog.service';
+import { SnackbarService } from '../../shared/services/snackbar.service';
 import { DealFormComponent } from './components/deal-form/deal-form.component';
 import { DealsFilterComponent } from './components/deals-filter/deals-filter.component';
 import { DealsTableComponent } from './components/deals-table/deals-table.component';
@@ -36,6 +40,7 @@ export class DealManagementComponent {
   readonly dealsService = inject(DealsService);
   readonly matDialog = inject(MatDialog);
   readonly dialogService = inject(DialogService);
+  readonly snackbarService = inject(SnackbarService);
 
   readonly dealsFilterForm = new FormGroup<DealFilterForm>({
     name: new FormControl(),
@@ -63,12 +68,21 @@ export class DealManagementComponent {
     dialogRef
       .afterClosed()
       .pipe(
-        filter((result) => !!result),
-        switchMap((result) =>
-          deal
+        filter((result: Deal) => !!result),
+        switchMap((result) => {
+          const request$ = deal?.id
             ? this.dealsService.updateDeal(result)
-            : this.dealsService.createDeal(result),
-        ),
+            : this.dealsService.createDeal(result);
+
+          // Open the dialog again if something went wrong with the creation/edition.
+          return request$.pipe(
+            catchError((err: HttpErrorResponse) => {
+              this.openModalDealForm(result);
+              this.snackbarService.error(err.error.message);
+              return EMPTY;
+            }),
+          );
+        }),
       )
       .subscribe(() => this.reload());
   }
