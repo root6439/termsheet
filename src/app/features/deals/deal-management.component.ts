@@ -16,6 +16,7 @@ import { DealFilter } from './models/deal-filter';
 import { DealFilterForm } from './models/deal-filter-form';
 
 import { HttpErrorResponse } from '@angular/common/http';
+import { AuthService } from '../../core/services/auth.service';
 import { DialogService } from '../../shared/services/dialog.service';
 import { SnackbarService } from '../../shared/services/snackbar.service';
 import { DealFormComponent } from './components/deal-form/deal-form.component';
@@ -41,6 +42,9 @@ export class DealManagementComponent {
   readonly matDialog = inject(MatDialog);
   readonly dialogService = inject(DialogService);
   readonly snackbarService = inject(SnackbarService);
+  readonly authService = inject(AuthService);
+
+  readonly isAdmin = this.authService.isAdmin;
 
   readonly dealsFilterForm = new FormGroup<DealFilterForm>({
     name: new FormControl(),

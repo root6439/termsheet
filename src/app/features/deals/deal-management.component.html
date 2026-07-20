@@ -4,6 +4,7 @@
 
 <app-deals-table
   [deals]="(deals$ | async) ?? []"
+  [showActions]="isAdmin()"
   (edit)="openModalDealForm($event)"
   (delete)="deleteDeal($event)"
 />
